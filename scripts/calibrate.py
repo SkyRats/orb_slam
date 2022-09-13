@@ -19,7 +19,7 @@ class BebopCalibration():
     def __init__(self):
 
         rospack = rospkg.RosPack()
-        positions_path = str(rospack.get_path('odom_slam_sensor_fusion')+'/config/maps/recorded_maps.json')
+        positions_path = str(rospack.get_path('orb_slam')+'/config/maps/recorded_maps.json')
 
         rospy.init_node('Vel_Control_Node', anonymous=True)
         
@@ -126,39 +126,39 @@ class BebopCalibration():
                         given_pose.orientation.x,given_pose.orientation.y,given_pose.orientation.z,given_pose.orientation.w = quarterion
                         given_pose.position.x,given_pose.position.y,given_pose.position.z = coord[:3]
 
-                        if map_name in calibration_data.keys():
+                        if map_name in self.calibration_data.keys():
                         
-                            calibration_data[map_name]["slam_poses"] = calibration_data[map_name]["slam_poses"]+[slam_pose.tolist()]
-                            calibration_data[map_name]["final_poses"] = calibration_data[map_name]["final_poses"]+[ros_numpy.numpify(given_pose).tolist()]
-                            if len(calibration_data[map_name]["final_poses"])<2:
-                                print("please record at least"+str(2-len(calibration_data[map_name]["final_poses"]))+"more position")
+                            self.calibration_data[map_name]["slam_poses"] = self.calibration_data[map_name]["slam_poses"]+[self.slam_pose.tolist()]
+                            self.calibration_data[map_name]["final_poses"] = self.calibration_data[map_name]["final_poses"]+[ros_numpy.numpify(given_pose).tolist()]
+                            if len(self.calibration_data[map_name]["final_poses"])<2:
+                                rospy.loginfo("Please record at least " + str(2-len(self.calibration_data[map_name]["final_poses"])) + " more position")
                             else:
                                 print("calibrated")
-                                tfM, sfM = calculate_map_tf()
-                                calibration_data[map_name]["pose_correction_matrix"] = tfM.tolist()
-                                calibration_data[map_name]["scale_factor_matrix"] = sfM.tolist()
+                                tfM, sfM = self.calculate_map_tf()
+                                self.calibration_data[map_name]["pose_correction_matrix"] = tfM.tolist()
+                                self.calibration_data[map_name]["scale_factor_matrix"] = sfM.tolist()
                         else:
-                            calibration_data[map_name]= {"slam_poses":[slam_pose.tolist()],"final_poses":[ros_numpy.numpify(given_pose).tolist()]}
-                            print("please record at least"+str(2-len(calibration_data[map_name]["final_poses"]))+"more position")
-                        print(calibration_data)
-                        with open(positions_path, 'w') as json_data_file:
-                            json.dump(calibration_data, json_data_file)
+                            self.calibration_data[map_name]= {"slam_poses":[self.slam_pose.tolist()],"final_poses":[ros_numpy.numpify(given_pose).tolist()]}
+                            print("please record at least"+str(2-len(self.calibration_data[map_name]["final_poses"]))+"more position")
+                        print(self.calibration_data)
+                        with open(self.positions_path, 'w') as json_data_file:
+                            json.dump(self.calibration_data, json_data_file)
                         print("position saved")
                 else:
                     print("no positions have been received yet!\nplease check if the node \"orb_slam2_ros\" is running")
             if decision == 2:
                 print("existing maps:")
-                print(calibration_data.keys())
-                map_name = str(raw_input("please write the name of the map edit or create: "))
-                if map_name in calibration_data.keys():
+                print(self.calibration_data.keys())
+                map_name = str(input("please write the name of the map edit or create: "))
+                if map_name in self.calibration_data.keys():
                     print("existing map selected!")    
-                    print(calibration_data[map_name])
+                    print(self.calibration_data[map_name])
                 else:
                     print("new map selected!")
             if decision == 3: #delete map
-                if str(raw_input("are you sure? (y/N):")) == "y":
-                    calibration_data.pop(map_name,None)
+                if str(input("are you sure? (y/N):")) == "y":
+                    self.calibration_data.pop(map_name,None)
                     map_name = "default"
                     print("map deleted")
-                    with open(positions_path, 'w') as json_data_file:
-                                json.dump(calibration_data, json_data_file)
+                    with open(self.positions_path, 'w') as json_data_file:
+                                json.dump(self.calibration_data, json_data_file)
