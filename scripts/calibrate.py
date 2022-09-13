@@ -19,7 +19,7 @@ class BebopCalibration():
     def __init__(self):
 
         rospack = rospkg.RosPack()
-        positions_path = str(rospack.get_path('odom_slam')+'/config/maps/recorded_maps.json')
+        positions_path = str(rospack.get_path('orb_slam')+'/config/maps/recorded_maps.json')
 
         rospy.init_node('Vel_Control_Node', anonymous=True)
         

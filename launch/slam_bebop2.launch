@@ -1,5 +1,5 @@
 <launch>
-  <arg name="map_file" default="citi.bin"/>
+  <arg name="map_file" default="estufa.bin"/>
   <arg name="load_map" default="true"/>
   <node name="orb_slam2_mono" pkg="orb_slam2_ros"
       type="orb_slam2_ros_mono" output="screen">
@@ -14,7 +14,7 @@
        <!-- static parameters -->
        <param name="load_map" type="bool" value="$(arg load_map)" />
        <param name="map_file" type="string" value="$(arg map_file)" />
-       <param name="settings_file" type="string" value="$(find odom_slam_sensor_fusion)/config/bebop2.yaml" />
+       <param name="settings_file" type="string" value="$(find orb_slam)/config/bebop2.yaml" />
 
        <param name="voc_file" type="string" value="$(find orb_slam2_ros)/orb_slam2/Vocabulary/ORBvoc.txt" />
 
