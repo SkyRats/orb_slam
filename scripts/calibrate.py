@@ -162,3 +162,7 @@ class BebopCalibration():
                     print("map deleted")
                     with open(self.positions_path, 'w') as json_data_file:
                                 json.dump(self.calibration_data, json_data_file)
+
+bebop = BebopCalibration()
+rospy.sleep(3)
+print(bebop.slam_pose)
